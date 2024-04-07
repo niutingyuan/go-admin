@@ -3,6 +3,7 @@ package controllers
 import (
 	"go-admin/database"
 	"go-admin/models"
+	"go-admin/util"
 	"strconv"
 	"time"
 
@@ -64,12 +65,8 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-	})
+	token, err := util.GenerateJwt(strconv.Itoa(int(user.Id)))
 
-	token, err := claims.SignedString([]byte("secret"))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
