@@ -92,14 +92,7 @@ type Claims struct {
 func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
 
-	id, err := util.ParseJwt(cookie)
-
-	if err != nil || !token.Valid {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
-	}
+	id, _ := util.ParseJwt(cookie)
 
 	var user models.User
 
