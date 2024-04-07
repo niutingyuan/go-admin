@@ -15,3 +15,17 @@ func GenerateJwt(issuer string) (string, error) {
 
 	return claims.SignedString([]byte(SecretKey))
 }
+
+func ParseJwt(cookie string) (string, error) {
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", err
+	}
+
+	claims := token.Claims.(*jwt.StandardClaims)
+
+	return claims.Issuer, nil
+}

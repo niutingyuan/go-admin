@@ -92,9 +92,7 @@ type Claims struct {
 func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
 
-	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
-	})
+	id, err := util.ParseJwt(cookie)
 
 	if err != nil || !token.Valid {
 		c.Status(fiber.StatusUnauthorized)
@@ -103,11 +101,9 @@ func User(c *fiber.Ctx) error {
 		})
 	}
 
-	claims := token.Claims.(*Claims)
-
 	var user models.User
 
-	database.DB.Where("id = ?", claims.Issuer).First(&user)
+	database.DB.Where("id = ?", id).First(&user)
 
 	return c.JSON(user)
 }
